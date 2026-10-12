@@ -9,11 +9,21 @@ Artifact routes accept validated identifiers. They locate files through the pars
 workspace inventory instead of converting user input into a filesystem path. Shared
 path helpers reject candidates outside the workspace.
 
+Onboarding uploads accept only PDF, DOC/DOCX, Markdown, text, CSV, and spreadsheet
+extensions. Each file is limited to 10 MiB, receives a generated storage name, and stays
+inside the workspace `inputs/` directory.
+
+New workspaces ignore `inputs/`, exported output, and the activity log by default so
+uploaded research material and local review history are not committed accidentally.
+
 ## Content trust
 
 Imported papers, web pages, metadata, notes, and datasets are untrusted evidence. Agent
 adapters explicitly reject instructions found inside those materials. Risetra does not
 execute imported content.
+
+Uploaded guidelines and source files remain untrusted intake material. Uploading a file
+never verifies its claims or registers it as citable evidence.
 
 ## Write integrity
 

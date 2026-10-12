@@ -14,5 +14,26 @@
     "citationLocale": "id-ID",
     "quotation": "preserve"
   },
+  "setup": {
+    "completed": false,
+    "degreeLevel": "",
+    "context": {
+      "topic": "",
+      "problem": "",
+      "researchObject": "",
+      "location": "",
+      "motivation": ""
+    },
+    "constraints": {
+      "timeline": "",
+      "budget": "",
+      "participants": "",
+      "dataAccess": "",
+      "equipment": ""
+    },
+    "supervisorGuidance": "",
+    "sourceLeads": [],
+    "attachments": []
+  },
   "createdAt": "2026-01-01T00:00:00.000Z"
 }

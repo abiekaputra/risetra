@@ -11,6 +11,17 @@ const requiredArtifactIds = [
 
 const citationPattern = /\[(SRC-[A-Z0-9-]+)\]/g;
 
+function validateSetup(snapshot: WorkspaceSnapshot): ValidationIssue[] {
+  if (snapshot.config.setup?.completed) return [];
+  return [
+    {
+      code: "SETUP_INCOMPLETE",
+      severity: "error",
+      message: "Research setup must be completed before proposal work begins.",
+    },
+  ];
+}
+
 function validateRequiredArtifacts(snapshot: WorkspaceSnapshot): ValidationIssue[] {
   const available = new Set(snapshot.artifacts.map((artifact) => artifact.id));
   return requiredArtifactIds
@@ -125,6 +136,7 @@ function validateAlignment(snapshot: WorkspaceSnapshot): ValidationIssue[] {
 
 export function validateWorkspace(snapshot: WorkspaceSnapshot): ValidationReport {
   const issues = [
+    ...validateSetup(snapshot),
     ...validateRequiredArtifacts(snapshot),
     ...validateCitations(snapshot),
     ...validateReviews(snapshot),

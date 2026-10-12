@@ -5,11 +5,18 @@ import type { WorkspaceOverview } from "../types";
 type Props = {
   workspace: WorkspaceOverview;
   onValidate: () => void;
+  onSetup: () => void;
   validating: boolean;
   copy: Copy;
 };
 
-export function WorkspaceHeader({ workspace, onValidate, validating, copy }: Props) {
+export function WorkspaceHeader({
+  workspace,
+  onValidate,
+  onSetup,
+  validating,
+  copy,
+}: Props) {
   return (
     <header className="workspace-header">
       <div>
@@ -21,6 +28,9 @@ export function WorkspaceHeader({ workspace, onValidate, validating, copy }: Pro
         </p>
       </div>
       <div className="header-actions">
+        <button className="button button--ghost button--on-dark" onClick={onSetup}>
+          {copy.setupResearch}
+        </button>
         <button className="button button--secondary" onClick={onValidate}>
           {validating ? copy.checking : copy.runChecks}
         </button>

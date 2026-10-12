@@ -34,6 +34,11 @@ The dashboard has no hidden authoring database. `risetra.json`, `artifacts/*.md`
 `records/*.json` can be inspected, versioned, and moved without the UI. This choice makes
 the research trail portable and keeps agent behavior auditable.
 
+Onboarding answers are stored in `risetra.json`. Institution guidelines and initial
+research materials are stored under `inputs/` with attachment metadata in the same
+configuration. These files are intake material, not verified citations; verified source
+records remain in `records/sources.json`.
+
 ## Configuration precedence
 
 Academic integrity cannot be overridden. Universal modules precede discipline and

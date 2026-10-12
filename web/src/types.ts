@@ -28,6 +28,58 @@ export type ValidationReport = {
   issues: ValidationIssue[];
 };
 
+export type IntakeAttachment = {
+  id: string;
+  category: "guideline" | "source";
+  originalName: string;
+  storedPath: string;
+  mediaType: string;
+  size: number;
+  uploadedAt: string;
+};
+
+export type SourceLead = {
+  id?: string;
+  title: string;
+  url: string;
+  note: string;
+};
+
+export type ResearchSetup = {
+  completed: boolean;
+  degreeLevel: string;
+  context: {
+    topic: string;
+    problem: string;
+    researchObject: string;
+    location: string;
+    motivation: string;
+  };
+  constraints: {
+    timeline: string;
+    budget: string;
+    participants: string;
+    dataAccess: string;
+    equipment: string;
+  };
+  supervisorGuidance: string;
+  sourceLeads: SourceLead[];
+  attachments: IntakeAttachment[];
+  completedAt?: string;
+};
+
+export type SetupPayload = Omit<
+  ResearchSetup,
+  "completed" | "attachments" | "completedAt"
+> & {
+  projectName: string;
+  studentName: string;
+  institution: string;
+  discipline: string;
+  methodology: string;
+  language: string;
+};
+
 export type WorkspaceOverview = {
   config: {
     projectName: string;
@@ -36,6 +88,7 @@ export type WorkspaceOverview = {
     discipline: string;
     methodology: string;
     demoMode: boolean;
+    setup?: ResearchSetup;
     languages: {
       dashboard: string;
       interaction: string;

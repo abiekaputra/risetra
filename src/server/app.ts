@@ -1,12 +1,13 @@
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
 import { access } from "node:fs/promises";
 import path from "node:path";
 
 import { attachContext } from "./context.js";
 import { registerErrorHandler } from "./errors.js";
 import { registerArtifactRoutes } from "./routes/artifacts.js";
+import { registerSetupRoutes } from "./routes/setup.js";
 import { registerValidationRoutes } from "./routes/validation.js";
 import { registerWorkspaceRoutes } from "./routes/workspace.js";
 
@@ -35,6 +36,11 @@ export async function createServer(
   });
   attachContext(app, { workspaceRoot: path.resolve(options.workspaceRoot) });
   registerErrorHandler(app);
+  app.addContentTypeParser(
+    "application/octet-stream",
+    { parseAs: "buffer" },
+    async (_request: FastifyRequest, body: Buffer) => body,
+  );
 
   if (options.development) {
     await app.register(cors, {
@@ -45,6 +51,7 @@ export async function createServer(
 
   await registerWorkspaceRoutes(app);
   await registerArtifactRoutes(app);
+  await registerSetupRoutes(app);
   await registerValidationRoutes(app);
 
   if (options.webRoot && (await directoryExists(options.webRoot))) {

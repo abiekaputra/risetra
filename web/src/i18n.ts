@@ -33,6 +33,7 @@ export type Copy = {
   draftSaved: string;
   artifactMarked: (status: string) => string;
   checksComplete: string;
+  setupResearch: string;
   issueMessages: Record<string, string>;
   statuses: Record<ReviewStatus, string>;
   kinds: Record<string, string>;
@@ -71,6 +72,7 @@ const en: Copy = {
   draftSaved: "Draft saved. Review status returned to DRAFT.",
   artifactMarked: (status) => `Artifact marked ${status.toLowerCase()}.`,
   checksComplete: "Integrity checks completed.",
+  setupResearch: "Research setup",
   issueMessages: {},
   statuses: { DRAFT: "DRAFT", REVIEWED: "REVIEWED", APPROVED: "APPROVED" },
   kinds: {},
@@ -109,7 +111,10 @@ const id: Copy = {
   draftSaved: "Draf tersimpan. Status tinjauan dikembalikan menjadi DRAF.",
   artifactMarked: (status) => `Artefak ditandai ${status.toLowerCase()}.`,
   checksComplete: "Pemeriksaan integritas selesai.",
+  setupResearch: "Siapkan penelitian",
   issueMessages: {
+    SETUP_INCOMPLETE:
+      "Persiapan penelitian harus diselesaikan sebelum proposal dimulai.",
     ARTIFACT_DRAFT: "Artefak ini masih memerlukan tinjauan manusia.",
     SOURCE_UNKNOWN: "Sitasi tidak ditemukan dalam inventaris sumber.",
     SOURCE_UNVERIFIED: "Sumber belum diverifikasi secara mandiri.",

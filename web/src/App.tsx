@@ -12,6 +12,7 @@ import { ArtifactList } from "./components/ArtifactList";
 import { EmptyState } from "./components/EmptyState";
 import { ValidationPanel } from "./components/ValidationPanel";
 import { WorkspaceHeader } from "./components/WorkspaceHeader";
+import { SetupWizard } from "./components/setup/SetupWizard";
 import { copyFor } from "./i18n";
 import type {
   Artifact,
@@ -27,6 +28,7 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
+  const [setupOpen, setSetupOpen] = useState(false);
   const copy = copyFor(workspace?.config.languages.dashboard ?? "en-US");
 
   const selected = artifacts.find((artifact) => artifact.id === selectedId);
@@ -49,6 +51,7 @@ export function App() {
         setWorkspace(nextWorkspace);
         setArtifacts(nextArtifacts);
         setSelectedId(nextArtifacts[0]?.id);
+        setSetupOpen(nextWorkspace.config.setup?.completed !== true);
       })
       .catch((caught: unknown) => {
         if (!active) return;
@@ -105,6 +108,13 @@ export function App() {
     }, copy.checksComplete);
   }
 
+  async function handleSetupComplete(successMessage: string) {
+    await refresh();
+    setSetupOpen(false);
+    setError(undefined);
+    setMessage(successMessage);
+  }
+
   if (error && !workspace) {
     return (
       <div className="fatal-state">
@@ -122,38 +132,51 @@ export function App() {
         <span>{copy.tagline}</span>
         <span className="local-badge">{copy.localWorkspace}</span>
       </div>
-      <WorkspaceHeader
-        workspace={workspace}
-        onValidate={handleValidation}
-        validating={busy}
-        copy={copy}
-      />
-      {(message || error) && (
-        <div className={`toast ${error ? "toast--error" : "toast--success"}`}>
-          {error ?? message}
-        </div>
-      )}
-      <div className="workspace-grid">
-        <ArtifactList
-          artifacts={artifacts}
-          selectedId={selectedId}
-          onSelect={(artifact) => setSelectedId(artifact.id)}
-          copy={copy}
+      {setupOpen ? (
+        <SetupWizard
+          workspace={workspace}
+          onComplete={handleSetupComplete}
+          onCancel={
+            workspace.config.setup?.completed ? () => setSetupOpen(false) : undefined
+          }
         />
-        {selected ? (
-          <ArtifactEditor
-            key={selected.id}
-            artifact={selected}
-            busy={busy}
-            onSave={handleSave}
-            onReview={handleReview}
+      ) : (
+        <>
+          <WorkspaceHeader
+            workspace={workspace}
+            onValidate={handleValidation}
+            onSetup={() => setSetupOpen(true)}
+            validating={busy}
             copy={copy}
           />
-        ) : (
-          <EmptyState />
-        )}
-        <ValidationPanel report={workspace.validation} copy={copy} />
-      </div>
+          {(message || error) && (
+            <div className={`toast ${error ? "toast--error" : "toast--success"}`}>
+              {error ?? message}
+            </div>
+          )}
+          <div className="workspace-grid">
+            <ArtifactList
+              artifacts={artifacts}
+              selectedId={selectedId}
+              onSelect={(artifact) => setSelectedId(artifact.id)}
+              copy={copy}
+            />
+            {selected ? (
+              <ArtifactEditor
+                key={selected.id}
+                artifact={selected}
+                busy={busy}
+                onSave={handleSave}
+                onReview={handleReview}
+                copy={copy}
+              />
+            ) : (
+              <EmptyState />
+            )}
+            <ValidationPanel report={workspace.validation} copy={copy} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

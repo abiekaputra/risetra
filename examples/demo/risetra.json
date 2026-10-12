@@ -14,5 +14,27 @@
     "citationLocale": "id-ID",
     "quotation": "preserve"
   },
+  "setup": {
+    "completed": true,
+    "degreeLevel": "Sarjana",
+    "context": {
+      "topic": "Pengalaman pencarian arah di perpustakaan kampus",
+      "problem": "Pengunjung pertama kali berhenti, kembali ke jalur sebelumnya, dan meminta petunjuk ketika mencari koleksi di perpustakaan kampus fiktif.",
+      "researchObject": "Pengalaman pengunjung pertama kali",
+      "location": "Perpustakaan Kampus Demonstrasi Risetra",
+      "motivation": "Memahami momen ketidakpastian sebelum tim layanan mengubah penanda atau tata ruang."
+    },
+    "constraints": {
+      "timeline": "Satu semester",
+      "budget": "Observasi dan wawancara skala kecil",
+      "participants": "Pengunjung pertama kali dan petugas layanan",
+      "dataAccess": "Catatan observasi dan wawancara dengan persetujuan",
+      "equipment": "Perekam suara dan catatan lapangan"
+    },
+    "supervisorGuidance": "Pisahkan kondisi yang diamati dari dugaan penyebab.",
+    "sourceLeads": [],
+    "attachments": [],
+    "completedAt": "2026-10-12T08:00:00.000Z"
+  },
   "createdAt": "2026-10-12T08:00:00.000Z"
 }

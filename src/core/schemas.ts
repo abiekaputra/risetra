@@ -11,6 +11,50 @@ export const languageSettingsSchema = z.object({
   quotation: z.enum(["preserve", "translate-with-label"]),
 });
 
+export const intakeAttachmentSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  category: z.enum(["guideline", "source"]),
+  originalName: z.string().min(1).max(180),
+  storedPath: z.string().min(1).max(300),
+  mediaType: z.string().min(1).max(120),
+  size: z
+    .number()
+    .int()
+    .positive()
+    .max(10 * 1024 * 1024),
+  uploadedAt: z.iso.datetime(),
+});
+
+export const sourceLeadSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(3).max(300),
+  url: z.url(),
+  note: z.string().max(1_000),
+});
+
+export const researchSetupSchema = z.object({
+  completed: z.boolean(),
+  degreeLevel: z.string().max(100),
+  context: z.object({
+    topic: z.string().max(300),
+    problem: z.string().max(3_000),
+    researchObject: z.string().max(500),
+    location: z.string().max(500),
+    motivation: z.string().max(3_000),
+  }),
+  constraints: z.object({
+    timeline: z.string().max(1_000),
+    budget: z.string().max(1_000),
+    participants: z.string().max(1_000),
+    dataAccess: z.string().max(1_000),
+    equipment: z.string().max(1_000),
+  }),
+  supervisorGuidance: z.string().max(5_000),
+  sourceLeads: z.array(sourceLeadSchema).max(50),
+  attachments: z.array(intakeAttachmentSchema).max(50),
+  completedAt: z.iso.datetime().optional(),
+});
+
 export const workspaceConfigSchema = z.object({
   schemaVersion: z.literal(1),
   projectName: z.string().min(3),
@@ -20,6 +64,7 @@ export const workspaceConfigSchema = z.object({
   methodology: z.string().min(2),
   demoMode: z.boolean(),
   languages: languageSettingsSchema,
+  setup: researchSetupSchema.optional(),
   createdAt: z.iso.datetime(),
 });
 

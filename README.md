@@ -33,6 +33,10 @@ artifact one at a time.
   optimistic write protection, and an append-only activity trail.
 - A responsive React dashboard for progress, Markdown editing, validation, and explicit
   `DRAFT → REVIEWED → APPROVED` decisions.
+- A four-step research setup for student identity, academic context, research materials,
+  practical constraints, supervisor guidance, working language, and method preference.
+- Safe local intake for institution guidelines and initial source files. Uploaded files
+  remain unverified leads until a student or reviewer registers their evidence.
 - Separate research modules for integrity, evidence, Chapters 1–3, languages,
   institutions, qualitative, quantitative, mixed, experimental, survey, engineering,
   machine learning, doctrinal, historical, literature-based, and practice-based work.
@@ -53,20 +57,17 @@ node dist/cli/index.js serve examples/demo
 
 Open `http://127.0.0.1:4173`.
 
-Create a workspace:
+Create a workspace, then finish the guided setup in the browser:
 
 ```bash
-node dist/cli/index.js init ./my-proposal \
-  --name "Working proposal title" \
-  --student "Student Name" \
-  --institution "University Name" \
-  --discipline "Public Health" \
-  --method "Mixed method" \
-  --language id-ID
-
-node dist/cli/index.js validate ./my-proposal
+node dist/cli/index.js init ./my-proposal --language id-ID
 node dist/cli/index.js serve ./my-proposal
 ```
+
+The first screen collects the student profile, working topic, observed problem, research
+object, location, motivation, available time and resources, supervisor notes, institution
+guidelines, and initial source leads. Completing it creates the first research charter;
+all proposal content still begins in `DRAFT` and requires human review.
 
 ### Language is a workspace decision
 
@@ -143,7 +144,7 @@ responsibility. Tests cover success, failure, boundary, and security-sensitive p
 
 ## Project status
 
-Version `0.1.0` is a local portfolio release. It is not published to npm and has no
+Version `0.2.0` is a local portfolio release. It is not published to npm and has no
 hosted service. The dashboard and CLI run locally, the demo is reproducible, and module
 review remains visible rather than being claimed as complete.
 

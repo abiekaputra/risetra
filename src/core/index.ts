@@ -5,6 +5,7 @@ export * from "./initialize.js";
 export * from "./modules.js";
 export * from "./paths.js";
 export * from "./schemas.js";
+export * from "./setup.js";
 export * from "./types.js";
 export * from "./validation.js";
 export * from "./workspace.js";

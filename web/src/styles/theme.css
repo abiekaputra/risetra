@@ -41,7 +41,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -98,4 +99,8 @@ p {
 .button--ghost {
   background: transparent;
   color: var(--muted);
+}
+
+.button--on-dark {
+  color: #d9e3f1;
 }

@@ -8,11 +8,11 @@ export function registerInitCommand(program: Command): void {
     .command("init")
     .description("Create a traceable research proposal workspace")
     .argument("[directory]", "workspace directory", ".")
-    .requiredOption("--name <name>", "proposal or working project name")
-    .requiredOption("--student <name>", "student name")
-    .requiredOption("--institution <name>", "institution name")
-    .requiredOption("--discipline <name>", "discipline or study program")
-    .requiredOption("--method <name>", "initial methodology selection")
+    .option("--name <name>", "proposal or working project name", "My research proposal")
+    .option("--student <name>", "student name", "Student")
+    .option("--institution <name>", "institution name", "Institution")
+    .option("--discipline <name>", "discipline or study program", "General")
+    .option("--method <name>", "initial methodology selection", "Undecided")
     .option("--language <code>", "proposal language", "id-ID")
     .action(async (directory, options) => {
       const target = await initializeWorkspace({
@@ -25,6 +25,6 @@ export function registerInitCommand(program: Command): void {
         proposalLanguage: options.language as string,
       });
       success(`Workspace created at ${target}`);
-      console.log(`Next: risetra validate ${directory}`);
+      console.log(`Next: risetra serve ${directory}`);
     });
 }

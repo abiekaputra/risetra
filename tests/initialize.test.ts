@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -31,6 +31,10 @@ describe("workspace initialization", () => {
     const workspace = await loadWorkspace(target);
     expect(workspace.config.discipline).toBe("History");
     expect(workspace.config.languages.proposal).toBe("id-ID");
+    expect(workspace.config.setup?.completed).toBe(false);
     expect(workspace.artifacts.map((artifact) => artifact.id)).toContain("chapter-3");
+    expect(await readFile(path.join(target, ".gitignore"), "utf8")).toContain(
+      "inputs/",
+    );
   });
 });
