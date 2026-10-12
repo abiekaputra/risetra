@@ -1,0 +1,67 @@
+{
+  "name": "risetra",
+  "version": "0.1.0",
+  "description": "A local research proposal workspace that turns evidence into a proposal students can defend.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "risetra": "dist/cli/index.js"
+  },
+  "files": [
+    "assets",
+    "adapters",
+    "dist",
+    "modules",
+    "templates",
+    "web/dist"
+  ],
+  "scripts": {
+    "build": "npm run build:web && tsup src/cli/index.ts src/server/main.ts --format esm --dts --clean --out-dir dist",
+    "build:web": "vite build --config web/vite.config.ts",
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "tsx watch src/server/main.ts --workspace examples/demo --port 4174 --dev",
+    "dev:web": "vite --config web/vite.config.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate:demo": "node dist/cli/index.js validate examples/demo",
+    "start": "node dist/cli/index.js serve examples/demo"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@fastify/static": "^10.1.6",
+    "commander": "^14.0.2",
+    "fastify": "^5.6.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.2",
+    "vitest": "^4.0.9"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

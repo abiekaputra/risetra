@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "projectName": "Hambatan pencarian arah di perpustakaan kampus",
+  "studentName": "Mahasiswa Demo",
+  "institution": "Kampus Demonstrasi Risetra",
+  "discipline": "Desain Layanan",
+  "methodology": "Studi kasus kualitatif",
+  "demoMode": true,
+  "languages": {
+    "dashboard": "id-ID",
+    "interaction": "id-ID",
+    "proposal": "id-ID",
+    "sources": ["en-US", "id-ID"],
+    "citationLocale": "id-ID",
+    "quotation": "preserve"
+  },
+  "createdAt": "2026-10-12T08:00:00.000Z"
+}

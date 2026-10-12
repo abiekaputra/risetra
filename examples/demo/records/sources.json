@@ -1,0 +1,20 @@
+[
+  {
+    "id": "SRC-DEMO-01",
+    "title": "Catatan observasi sintetis untuk demo Risetra",
+    "authors": ["Tim Demo Risetra"],
+    "year": 2026,
+    "type": "demo",
+    "verified": false,
+    "note": "Fixture sintetis untuk mendemonstrasikan provenance dan tidak boleh dikutip sebagai penelitian nyata."
+  },
+  {
+    "id": "SRC-DEMO-02",
+    "title": "Kutipan wawancara sintetis untuk demo Risetra",
+    "authors": ["Tim Demo Risetra"],
+    "year": 2026,
+    "type": "demo",
+    "verified": false,
+    "note": "Fixture sintetis yang hanya digunakan ketika demoMode aktif."
+  }
+]

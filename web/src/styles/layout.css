@@ -1,0 +1,145 @@
+.app-shell {
+  width: min(1520px, calc(100% - 2rem));
+  margin: 1rem auto 3rem;
+}
+
+.brand-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.brand-bar img {
+  width: 8.8rem;
+  height: 3rem;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.local-badge {
+  margin-left: auto;
+  border: 1px solid rgba(9, 199, 189, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  color: var(--teal-dark);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 11rem;
+  border-radius: 1.4rem;
+  padding: 2rem 2.3rem;
+  color: white;
+  background:
+    linear-gradient(115deg, rgba(9, 199, 189, 0.1), transparent 40%), var(--navy);
+  box-shadow: var(--shadow);
+}
+
+.workspace-header h1 {
+  max-width: 820px;
+  margin: 0.5rem 0 0.7rem;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.06;
+}
+
+.workspace-header p {
+  margin-bottom: 0;
+  color: #aebbd0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.78fr) minmax(420px, 1.55fr) minmax(
+      250px,
+      0.82fr
+    );
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: start;
+}
+
+.artifact-panel,
+.editor-panel,
+.validation-panel {
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.artifact-panel,
+.validation-panel {
+  overflow: hidden;
+}
+
+.editor-panel {
+  min-height: 690px;
+  padding: 1.3rem;
+}
+
+.loading-state,
+.fatal-state {
+  display: grid;
+  place-content: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+@media (max-width: 1080px) {
+  .workspace-grid {
+    grid-template-columns: 18rem 1fr;
+  }
+
+  .validation-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    width: min(100% - 1rem, 1520px);
+  }
+
+  .brand-bar > span:not(.local-badge) {
+    display: none;
+  }
+
+  .workspace-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.3rem;
+    padding: 1.4rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .validation-panel {
+    grid-column: auto;
+  }
+
+  .editor-panel {
+    min-height: 600px;
+  }
+}

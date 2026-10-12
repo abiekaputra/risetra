@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "projectName": "Untitled research proposal",
+  "studentName": "Student",
+  "institution": "Institution",
+  "discipline": "General",
+  "methodology": "Undecided",
+  "demoMode": false,
+  "languages": {
+    "dashboard": "id-ID",
+    "interaction": "id-ID",
+    "proposal": "id-ID",
+    "sources": ["id-ID", "en-US"],
+    "citationLocale": "id-ID",
+    "quotation": "preserve"
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z"
+}

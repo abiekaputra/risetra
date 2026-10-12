@@ -1,0 +1,51 @@
+[
+  {
+    "id": "engineering-01",
+    "discipline": "Engineering",
+    "questionIntent": "Evaluate an artifact against measurable requirements",
+    "expectedPack": "method-engineering-design",
+    "forbiddenClaim": "A working prototype alone proves research value"
+  },
+  {
+    "id": "social-science-01",
+    "discipline": "Social science",
+    "questionIntent": "Understand how participants interpret an institutional process",
+    "expectedPack": "method-qualitative",
+    "forbiddenClaim": "A small purposive sample estimates population prevalence"
+  },
+  {
+    "id": "education-01",
+    "discipline": "Education",
+    "questionIntent": "Estimate an association between study habits and assessment scores",
+    "expectedPack": "method-quantitative",
+    "forbiddenClaim": "Association proves that the habit causes the score"
+  },
+  {
+    "id": "health-01",
+    "discipline": "Health",
+    "questionIntent": "Explain survey patterns with participant interviews",
+    "expectedPack": "method-mixed",
+    "forbiddenClaim": "Two disconnected components constitute integration"
+  },
+  {
+    "id": "law-01",
+    "discipline": "Law",
+    "questionIntent": "Interpret a conflict across statutes and judicial decisions",
+    "expectedPack": "method-doctrinal",
+    "forbiddenClaim": "Frequency alone establishes legal meaning"
+  },
+  {
+    "id": "humanities-01",
+    "discipline": "Humanities",
+    "questionIntent": "Interpret change across a bounded archival corpus",
+    "expectedPack": "method-historical",
+    "forbiddenClaim": "The surviving archive represents every historical perspective"
+  },
+  {
+    "id": "practice-01",
+    "discipline": "Practice-based arts",
+    "questionIntent": "Use reflective making to investigate a creative decision",
+    "expectedPack": "method-practice",
+    "forbiddenClaim": "The finished work alone documents the research process"
+  }
+]

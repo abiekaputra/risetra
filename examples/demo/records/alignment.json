@@ -1,0 +1,18 @@
+[
+  {
+    "questionId": "RQ-1",
+    "question": "Momen mana dalam perjalanan perpustakaan yang menimbulkan ketidakpastian arah bagi pengunjung pertama kali?",
+    "objectiveId": "OBJ-1",
+    "objective": "Mengidentifikasi momen dan petunjuk lingkungan yang berkaitan dengan ketidakpastian arah.",
+    "method": "Observasi terstruktur yang dilanjutkan dengan wawancara semi-terstruktur",
+    "evidenceOutput": "Peta perjalanan berisi momen ketidakpastian berkode dan kutipan pendukung"
+  },
+  {
+    "questionId": "RQ-2",
+    "question": "Bagaimana pengunjung pertama kali memulihkan arah setelah memilih jalur yang salah?",
+    "objectiveId": "OBJ-2",
+    "objective": "Menjelaskan strategi pemulihan yang digunakan setelah salah memilih jalur.",
+    "method": "Analisis tematik catatan observasi dan keterangan wawancara",
+    "evidenceOutput": "Tema strategi pemulihan yang dihubungkan dengan tahap perjalanan teramati"
+  }
+]
