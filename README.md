@@ -163,11 +163,13 @@ responsibility. Tests cover success, failure, boundary, and security-sensitive p
 
 ## Project status
 
-Version `1.0.0` is a complete local product release for the documented Chapters 1–3
-workflow. It has no hosted service and stores proposal material locally. Codex login and
-model usage come from the student's existing Codex installation. The software workflow
-is complete; bundled academic modules keep their visible review status and are never
-misrepresented as institution-approved rules.
+Version `1.0.1` is a complete local product release for the documented Chapters 1–3
+workflow. It preserves workspace write access when a Codex conversation resumes and
+keeps proposal-stage markers circular on narrow screens. It has no hosted service and
+stores proposal material locally. Codex login and model usage come from the student's
+existing Codex installation. The software workflow is complete; bundled academic
+modules keep their visible review status and are never misrepresented as
+institution-approved rules.
 
 ## License
 

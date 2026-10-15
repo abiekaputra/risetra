@@ -25,6 +25,7 @@ import { writeFileSync } from "node:fs";
 const args = process.argv.slice(2);
 if (args[0] === "--version") { console.log("codex-cli test"); process.exit(0); }
 if (args[0] === "login") { console.log("Logged in using test"); process.exit(0); }
+writeFileSync(new URL("./fake-codex-args.json", import.meta.url), JSON.stringify(args));
 let input = "";
 for await (const chunk of process.stdin) input += chunk;
 const outputIndex = args.indexOf("--output-last-message");
@@ -74,6 +75,18 @@ describe("Codex research runtime", () => {
     await runtime.start("Saya memiliki laporan awal.");
     const second = await waitForTurn(runtime);
     expect(second.messages).toHaveLength(4);
+    const resumeArgs = JSON.parse(
+      await readFile(path.join(root, "fake-codex-args.json"), "utf8"),
+    ) as string[];
+    expect(resumeArgs.slice(0, 7)).toEqual([
+      "exec",
+      "--cd",
+      root,
+      "--sandbox",
+      "workspace-write",
+      "resume",
+      first.threadId,
+    ]);
     expect(
       JSON.parse(await readFile(path.join(root, "records/agent-session.json"), "utf8")),
     ).toMatchObject({ status: "waiting" });

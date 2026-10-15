@@ -1,6 +1,6 @@
 {
   "name": "risetra",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A local research proposal workspace that turns evidence into a proposal students can defend.",
   "type": "module",
   "private": true,

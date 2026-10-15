@@ -69,9 +69,11 @@
 
 .stage-list li span {
   display: grid;
+  flex: 0 0 1.7rem;
   place-items: center;
   width: 1.7rem;
   height: 1.7rem;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: var(--soft);
   font-size: 0.68rem;
@@ -244,8 +246,9 @@
   }
   .stage-list {
     display: grid;
-    grid-template-columns: repeat(7, minmax(6rem, 1fr));
+    grid-template-columns: repeat(7, minmax(7.5rem, 1fr));
     overflow-x: auto;
+    scrollbar-gutter: stable;
   }
   .message-composer {
     grid-template-columns: 1fr;

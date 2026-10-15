@@ -136,7 +136,17 @@ export class CodexRuntime {
       "--skip-git-repo-check",
     ];
     const args = state.threadId
-      ? ["exec", "resume", state.threadId, ...common, "-"]
+      ? [
+          "exec",
+          "--cd",
+          this.root,
+          "--sandbox",
+          "workspace-write",
+          "resume",
+          state.threadId,
+          ...common,
+          "-",
+        ]
       : ["exec", "--cd", this.root, "--sandbox", "workspace-write", ...common, "-"];
     const child = spawn(executable, args, {
       cwd: this.root,
