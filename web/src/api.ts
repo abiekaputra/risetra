@@ -88,7 +88,7 @@ export async function saveAlignment(alignment: AlignmentItem[]): Promise<void> {
 export async function exportProposal(
   format: "md" | "docx" | "pdf",
   allowReviewed: boolean,
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(
     `/api/export?format=${format}&allowReviewed=${String(allowReviewed)}`,
     { method: "POST" },
@@ -100,10 +100,16 @@ export async function exportProposal(
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
+  const disposition = response.headers.get("Content-Disposition");
+  const filename = disposition?.match(/filename="?([^";]+)"?/i)?.[1];
   anchor.href = url;
-  anchor.download = `proposal.${format}`;
+  anchor.download = filename ?? `proposal.${format}`;
+  anchor.hidden = true;
+  document.body.append(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+  return anchor.download;
 }
 
 export async function getWorkspace(): Promise<WorkspaceOverview> {

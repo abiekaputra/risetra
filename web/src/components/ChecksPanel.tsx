@@ -4,25 +4,101 @@ import { ValidationPanel } from "./ValidationPanel";
 import type { Copy } from "../i18n";
 import type { ValidationReport } from "../types";
 
-type Props = {
-  report: ValidationReport;
-  busy: boolean;
-  locale: string;
-  copy: Copy;
-  onValidate: () => Promise<void>;
-  onExport: (format: "md" | "docx" | "pdf", allowReviewed: boolean) => Promise<void>;
+type ExportFormat = "md" | "docx" | "pdf";
+type Action = "validate" | ExportFormat;
+type Feedback = {
+  tone: "success" | "error" | "info";
+  title: string;
+  body: string;
 };
 
-export function ChecksPanel({
-  report,
-  busy,
-  locale,
-  copy,
-  onValidate,
-  onExport,
-}: Props) {
-  const [allowReviewed, setAllowReviewed] = useState(false);
+type Props = {
+  report: ValidationReport;
+  locale: string;
+  copy: Copy;
+  onValidate: () => Promise<ValidationReport>;
+  onExport: (format: ExportFormat, allowReviewed: boolean) => Promise<string>;
+};
+
+function messageFrom(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+export function ChecksPanel({ report, locale, copy, onValidate, onExport }: Props) {
+  const [allowReviewed, setAllowReviewed] = useState(true);
+  const [action, setAction] = useState<Action>();
+  const [feedback, setFeedback] = useState<Feedback>();
   const isId = locale.toLowerCase().startsWith("id");
+
+  async function validate() {
+    setAction("validate");
+    setFeedback({
+      tone: "info",
+      title: isId ? "Sedang memeriksa proposal…" : "Checking the proposal…",
+      body: isId
+        ? "Risetra memeriksa struktur, sitasi, dan keselarasan Bab 1–3."
+        : "Risetra is checking the structure, citations, and alignment of Chapters 1–3.",
+    });
+    try {
+      const result = await onValidate();
+      const summary = isId
+        ? `${result.counts.error} galat · ${result.counts.warning} peringatan · ${result.counts.info} catatan tinjauan.`
+        : `${result.counts.error} errors · ${result.counts.warning} warnings · ${result.counts.info} review notes.`;
+      setFeedback({
+        tone: result.valid ? "success" : "error",
+        title: result.valid
+          ? isId
+            ? "Pemeriksaan selesai"
+            : "Checks completed"
+          : isId
+            ? "Proposal masih diblokir"
+            : "The proposal is still blocked",
+        body: result.valid
+          ? `${summary} ${isId ? "Draf dapat diekspor setelah Bab 1–3 berstatus DITINJAU." : "The draft can be exported after Chapters 1–3 reach REVIEWED status."}`
+          : summary,
+      });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        title: isId ? "Pemeriksaan gagal" : "Checks failed",
+        body: messageFrom(error),
+      });
+    } finally {
+      setAction(undefined);
+    }
+  }
+
+  async function exportFile(format: ExportFormat) {
+    setAction(format);
+    const label = format.toUpperCase();
+    setFeedback({
+      tone: "info",
+      title: isId ? `Sedang menyiapkan ${label}…` : `Preparing ${label}…`,
+      body: isId
+        ? "File akan diunduh oleh browser dan salinannya disimpan di folder output/."
+        : "The browser will download the file and keep a copy under output/.",
+    });
+    try {
+      const filename = await onExport(format, allowReviewed);
+      setFeedback({
+        tone: "success",
+        title: isId ? `${label} berhasil dibuat` : `${label} created`,
+        body: isId
+          ? `${filename} telah diunduh dan disimpan lokal di output/${filename}.`
+          : `${filename} was downloaded and saved locally at output/${filename}.`,
+      });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        title: isId ? `${label} gagal dibuat` : `${label} export failed`,
+        body: messageFrom(error),
+      });
+    } finally {
+      setAction(undefined);
+    }
+  }
+
+  const busy = action !== undefined;
   return (
     <div className="checks-layout">
       <ValidationPanel report={report} copy={copy} />
@@ -39,10 +115,20 @@ export function ChecksPanel({
         <button
           className="button button--secondary"
           disabled={busy}
-          onClick={onValidate}
+          onClick={() => void validate()}
         >
-          {busy ? copy.checking : copy.runChecks}
+          {action === "validate" ? copy.checking : copy.runChecks}
         </button>
+        {feedback && (
+          <div
+            className={`export-feedback export-feedback--${feedback.tone}`}
+            role={feedback.tone === "error" ? "alert" : "status"}
+            aria-live="polite"
+          >
+            <strong>{feedback.title}</strong>
+            <span>{feedback.body}</span>
+          </div>
+        )}
         <label className="checkbox-row">
           <input
             type="checkbox"
@@ -56,21 +142,24 @@ export function ChecksPanel({
         <div className="export-actions">
           <button
             className="button button--primary"
-            onClick={() => onExport("docx", allowReviewed)}
+            disabled={busy}
+            onClick={() => void exportFile("docx")}
           >
-            DOCX
+            {action === "docx" ? "Menyiapkan DOCX…" : "DOCX"}
           </button>
           <button
             className="button button--primary"
-            onClick={() => onExport("pdf", allowReviewed)}
+            disabled={busy}
+            onClick={() => void exportFile("pdf")}
           >
-            PDF
+            {action === "pdf" ? "Menyiapkan PDF…" : "PDF"}
           </button>
           <button
             className="button button--secondary"
-            onClick={() => onExport("md", allowReviewed)}
+            disabled={busy}
+            onClick={() => void exportFile("md")}
           >
-            Markdown
+            {action === "md" ? "Menyiapkan Markdown…" : "Markdown"}
           </button>
         </div>
         <small>

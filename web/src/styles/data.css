@@ -187,6 +187,37 @@
   gap: 0.8rem;
 }
 
+.export-feedback {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  color: var(--muted);
+  background: var(--soft);
+  line-height: 1.45;
+}
+
+.export-feedback strong {
+  color: var(--ink);
+}
+
+.export-feedback--success {
+  border-color: #93d7c4;
+  background: #e8f8f2;
+}
+
+.export-feedback--error {
+  border-color: #f2adb8;
+  background: #fff0f2;
+}
+
+.export-feedback--error strong {
+  color: var(--danger);
+}
+
 @media (max-width: 720px) {
   .data-heading {
     flex-direction: column;

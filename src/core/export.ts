@@ -71,8 +71,28 @@ function plainText(markdown: string): string {
     .trim();
 }
 
+function tableCells(line: string): string[] | undefined {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return undefined;
+  if (/^\|(?:\s*:?-+:?\s*\|)+$/.test(trimmed)) return [];
+  return trimmed
+    .slice(1, -1)
+    .split("|")
+    .map((cell) => plainText(cell.trim()));
+}
+
 function markdownParagraphs(markdown: string): Paragraph[] {
-  return markdown.split("\n").map((line) => {
+  return markdown.split("\n").flatMap((line) => {
+    const cells = tableCells(line);
+    if (cells?.length === 0) return [];
+    if (cells) {
+      return [
+        new Paragraph({
+          children: [new TextRun({ text: cells.join("  ·  "), size: 19 })],
+          spacing: { after: 90 },
+        }),
+      ];
+    }
     const heading = /^(#{1,3})\s+(.+)$/.exec(line);
     if (heading) {
       const levels = [
@@ -80,14 +100,25 @@ function markdownParagraphs(markdown: string): Paragraph[] {
         HeadingLevel.HEADING_2,
         HeadingLevel.HEADING_3,
       ];
-      return new Paragraph({
-        text: heading[2] ?? "",
-        heading: levels[(heading[1]?.length ?? 3) - 1] ?? HeadingLevel.HEADING_3,
-      });
+      return [
+        new Paragraph({
+          text: heading[2] ?? "",
+          heading: levels[(heading[1]?.length ?? 3) - 1] ?? HeadingLevel.HEADING_3,
+        }),
+      ];
     }
     const bullet = /^[-*]\s+(.+)$/.exec(line);
-    if (bullet) return new Paragraph({ text: bullet[1], bullet: { level: 0 } });
-    return new Paragraph({ children: [new TextRun(line)] });
+    if (bullet) {
+      return [
+        new Paragraph({ text: plainText(bullet[1] ?? ""), bullet: { level: 0 } }),
+      ];
+    }
+    return [
+      new Paragraph({
+        children: [new TextRun(plainText(line))],
+        spacing: { after: line ? 100 : 0 },
+      }),
+    ];
   });
 }
 
@@ -117,6 +148,7 @@ async function writePdf(
   const document = new PDFDocument({
     size: "A4",
     margins: { top: 64, bottom: 64, left: 64, right: 64 },
+    bufferPages: true,
   });
   const chunks: Buffer[] = [];
   document.on("data", (chunk: Buffer) => chunks.push(chunk));
@@ -125,17 +157,75 @@ async function writePdf(
     document.on("error", reject);
   });
   document.info.Title = snapshot.config.projectName;
-  for (const line of markdown.split("\n")) {
+  document
+    .fillColor("#0a5f62")
+    .font("Helvetica-Bold")
+    .fontSize(11)
+    .text("RISETRA · DRAF PROPOSAL", { align: "center" })
+    .moveDown(3)
+    .fillColor("#14233b")
+    .fontSize(21)
+    .text(snapshot.config.projectName, { align: "center", lineGap: 6 })
+    .moveDown(2)
+    .font("Helvetica")
+    .fontSize(12)
+    .text(snapshot.config.studentName, { align: "center" })
+    .moveDown(0.4)
+    .text(snapshot.config.institution, { align: "center" })
+    .moveDown(3)
+    .fillColor("#5f6f85")
+    .fontSize(10)
+    .text("Bab 1–3 · Draf ditinjau untuk konsultasi dosen", { align: "center" })
+    .moveDown(0.4)
+    .text(new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date()), {
+      align: "center",
+    });
+  document.addPage();
+
+  for (const line of markdown.split("\n").slice(4)) {
+    const cells = tableCells(line);
+    if (cells?.length === 0) continue;
+    if (cells) {
+      document
+        .fillColor("#26364f")
+        .font("Helvetica")
+        .fontSize(9)
+        .text(cells.join("  •  "), { indent: 10, lineGap: 3 })
+        .moveDown(0.25);
+      continue;
+    }
     const heading = /^(#{1,3})\s+(.+)$/.exec(line);
     if (heading) {
       document
         .moveDown(0.6)
+        .fillColor("#14233b")
         .font("Helvetica-Bold")
         .fontSize(18 - (heading[1]?.length ?? 3) * 2)
         .text(heading[2] ?? "");
     } else {
-      document.font("Helvetica").fontSize(11).text(plainText(line), { lineGap: 4 });
+      document
+        .fillColor("#1e293b")
+        .font("Helvetica")
+        .fontSize(11)
+        .text(plainText(line), { lineGap: 4 });
     }
+  }
+
+  const range = document.bufferedPageRange();
+  for (let index = range.start; index < range.start + range.count; index += 1) {
+    document.switchToPage(index);
+    const bottomMargin = document.page.margins.bottom;
+    document.page.margins.bottom = 0;
+    document
+      .fillColor("#7a879a")
+      .font("Helvetica")
+      .fontSize(8)
+      .text(`Risetra · ${index + 1} / ${range.count}`, 64, document.page.height - 36, {
+        align: "center",
+        width: 467,
+        lineBreak: false,
+      });
+    document.page.margins.bottom = bottomMargin;
   }
   document.end();
   await writeFile(target, await completed);

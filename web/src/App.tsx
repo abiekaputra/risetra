@@ -271,25 +271,16 @@ export function App() {
           {activeTab === "checks" && (
             <ChecksPanel
               report={workspace.validation}
-              busy={busy}
               locale={locale}
               copy={copy}
-              onValidate={() =>
-                execute(async () => {
-                  const report: ValidationReport = await runValidation();
-                  setWorkspace((current) =>
-                    current ? { ...current, validation: report } : current,
-                  );
-                }, copy.checksComplete)
-              }
-              onExport={(format, allowReviewed) =>
-                execute(
-                  () => exportProposal(format, allowReviewed),
-                  locale.startsWith("id")
-                    ? "Proposal berhasil diekspor."
-                    : "Proposal exported.",
-                )
-              }
+              onValidate={async () => {
+                const report: ValidationReport = await runValidation();
+                setWorkspace((current) =>
+                  current ? { ...current, validation: report } : current,
+                );
+                return report;
+              }}
+              onExport={exportProposal}
             />
           )}
         </>
