@@ -248,7 +248,20 @@
     display: grid;
     grid-template-columns: repeat(7, minmax(7.5rem, 1fr));
     overflow-x: auto;
+    padding-bottom: 0.9rem;
     scrollbar-gutter: stable;
+    scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) transparent;
+    scrollbar-width: thin;
+  }
+  .stage-list::-webkit-scrollbar {
+    height: 0.4rem;
+  }
+  .stage-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .stage-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--muted) 55%, transparent);
   }
   .message-composer {
     grid-template-columns: 1fr;
