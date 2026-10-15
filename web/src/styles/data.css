@@ -1,0 +1,203 @@
+.data-panel,
+.export-panel {
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  padding: 1.4rem;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.data-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.data-heading h2,
+.export-panel h2 {
+  margin: 0.35rem 0 0;
+}
+
+.data-heading > div:last-child,
+.export-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.data-intro,
+.export-panel p,
+.export-panel small {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.literature-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: var(--soft);
+}
+
+.literature-search > div:first-child,
+.literature-results article > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.literature-search small,
+.literature-results small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.literature-search__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8rem auto;
+  gap: 0.6rem;
+}
+
+.literature-search__form input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.7rem;
+}
+
+.literature-results {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.literature-results article {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+}
+
+.inline-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.78rem;
+}
+
+.source-cards,
+.alignment-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.source-card,
+.alignment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #fbfcfd;
+}
+
+.source-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.source-card label,
+.alignment-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.source-card input,
+.source-card textarea,
+.source-card select,
+.alignment-card input,
+.alignment-card textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.7rem;
+  color: var(--ink);
+  background: white;
+  font-weight: 450;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: center;
+  flex-direction: row !important;
+  gap: 0.55rem !important;
+  margin-top: 0.7rem;
+  color: var(--ink) !important;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.blank-panel {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--line);
+  border-radius: 1rem;
+  padding: 3rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.checks-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: start;
+}
+
+.checks-layout .validation-panel,
+.checks-layout .export-panel {
+  margin-top: 0;
+}
+
+.export-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+@media (max-width: 720px) {
+  .data-heading {
+    flex-direction: column;
+  }
+  .source-cards,
+  .alignment-list,
+  .checks-layout,
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+  .literature-search__form {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "risetra",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "A local research proposal workspace that turns evidence into a proposal students can defend.",
   "type": "module",
   "private": true,
@@ -34,7 +34,11 @@
     "@fastify/cors": "^11.1.0",
     "@fastify/static": "^10.1.6",
     "commander": "^14.0.2",
+    "docx": "^9.11.0",
     "fastify": "^5.6.1",
+    "jszip": "^3.10.2",
+    "pdf-parse": "^2.4.5",
+    "pdfkit": "^0.20.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "yaml": "^2.8.1",
@@ -43,6 +47,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
+    "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.1",

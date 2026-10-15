@@ -25,7 +25,7 @@ async function pathExists(pathname: string): Promise<boolean> {
 
 function packageRoot(): string {
   const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-  return path.resolve(currentDirectory, "..", "..", "..");
+  return path.resolve(currentDirectory, "..", "..");
 }
 
 async function findTemplate(): Promise<string> {
@@ -50,6 +50,13 @@ export async function initializeWorkspace(options: InitializeOptions): Promise<s
 
   await mkdir(target, { recursive: true });
   await cp(await findTemplate(), target, { recursive: true, errorOnExist: true });
+  const bundledModules = path.resolve(packageRoot(), "modules");
+  if (await pathExists(bundledModules)) {
+    await cp(bundledModules, path.join(target, ".risetra", "modules"), {
+      recursive: true,
+      errorOnExist: true,
+    });
+  }
   const starter = JSON.parse(await readFile(configPath, "utf8")) as Record<
     string,
     unknown

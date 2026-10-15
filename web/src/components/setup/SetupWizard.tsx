@@ -132,6 +132,7 @@ export function SetupWizard({ workspace, onComplete, onCancel }: Props) {
         )}
         {step === 3 && <ConstraintsStep draft={draft} update={update} copy={copy} />}
         {error && <div className="setup-error">{error}</div>}
+        {step === 3 && <p className="setup-privacy">{copy.privacyNotice}</p>}
         <footer className="setup-actions">
           <div>
             {onCancel && (

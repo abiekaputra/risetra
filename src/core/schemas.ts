@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { reviewStatuses } from "./types.js";
+import { researchStages, reviewStatuses } from "./types.js";
 
 export const languageSettingsSchema = z.object({
   dashboard: z.string().min(2),
@@ -16,6 +16,7 @@ export const intakeAttachmentSchema = z.object({
   category: z.enum(["guideline", "source"]),
   originalName: z.string().min(1).max(180),
   storedPath: z.string().min(1).max(300),
+  extractedPath: z.string().min(1).max(300).optional(),
   mediaType: z.string().min(1).max(120),
   size: z
     .number()
@@ -102,3 +103,44 @@ export const alignmentItemSchema = z.object({
 
 export const alignmentSchema = z.array(alignmentItemSchema);
 export const sourcesSchema = z.array(sourceRecordSchema);
+
+export const agentDecisionSchema = z.object({
+  label: z.string().min(1).max(120),
+  value: z.string().min(1).max(1_000),
+  reason: z.string().min(1).max(2_000),
+});
+
+export const agentMessageSchema = z.object({
+  id: z.string().uuid(),
+  role: z.enum(["student", "agent", "system"]),
+  body: z.string().max(20_000),
+  createdAt: z.iso.datetime(),
+  question: z.string().max(4_000).optional(),
+  explanation: z.string().max(8_000).optional(),
+  decisions: z.array(agentDecisionSchema).max(20).optional(),
+  evidenceNeeded: z.array(z.string().max(1_000)).max(30).optional(),
+  changedArtifacts: z.array(z.string().max(200)).max(30).optional(),
+});
+
+export const agentSessionSchema = z.object({
+  schemaVersion: z.literal(1),
+  provider: z.literal("codex"),
+  threadId: z.string().uuid().optional(),
+  status: z.enum(["idle", "running", "waiting", "failed", "complete"]),
+  stage: z.enum(researchStages),
+  activity: z.string().max(500),
+  messages: z.array(agentMessageSchema).max(500),
+  lastError: z.string().max(4_000).optional(),
+  updatedAt: z.iso.datetime(),
+});
+
+export const agentTurnOutputSchema = z.object({
+  summary: z.string().min(1).max(8_000),
+  explanation: z.string().min(1).max(8_000),
+  question: z.string().max(4_000),
+  stage: z.enum(researchStages),
+  stageStatus: z.enum(["waiting_input", "ready_for_review", "complete"]),
+  decisions: z.array(agentDecisionSchema).max(20),
+  evidenceNeeded: z.array(z.string().max(1_000)).max(30),
+  changedArtifacts: z.array(z.string().max(200)).max(30),
+});

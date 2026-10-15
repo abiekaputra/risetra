@@ -93,16 +93,19 @@ describe("research setup API", () => {
       url: "/api/setup/attachments?category=guideline",
       headers: {
         "content-type": "application/octet-stream",
-        "x-risetra-filename": encodeURIComponent("pedoman kampus.pdf"),
-        "x-risetra-media-type": "application/pdf",
+        "x-risetra-filename": encodeURIComponent("pedoman kampus.txt"),
+        "x-risetra-media-type": "text/plain",
       },
-      payload: Buffer.from("%PDF-demo"),
+      payload: Buffer.from("Pedoman seminar proposal"),
     });
 
     expect(upload.statusCode).toBe(200);
     const attachment = upload.json().attachment;
     expect(await readFile(path.join(root, attachment.storedPath), "utf8")).toBe(
-      "%PDF-demo",
+      "Pedoman seminar proposal",
+    );
+    expect(await readFile(path.join(root, attachment.extractedPath), "utf8")).toBe(
+      "Pedoman seminar proposal\n",
     );
 
     const remove = await app.inject({

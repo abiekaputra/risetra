@@ -1,3 +1,5 @@
 inputs/
 output/
 records/activity.ndjson
+records/agent-session.json
+.risetra/

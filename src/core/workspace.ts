@@ -4,8 +4,10 @@ import path from "node:path";
 import { parseArtifact, serializeArtifact } from "./frontmatter.js";
 import { alignmentSchema, sourcesSchema, workspaceConfigSchema } from "./schemas.js";
 import type {
+  AlignmentItem,
   Artifact,
   ArtifactFrontmatter,
+  SourceRecord,
   WorkspaceConfig,
   WorkspaceSnapshot,
   WorkspaceSummary,
@@ -16,6 +18,30 @@ const requiredConfigFile = "risetra.json";
 
 async function readJson(pathname: string): Promise<unknown> {
   return JSON.parse(await readFile(pathname, "utf8")) as unknown;
+}
+
+export async function saveSources(
+  root: string,
+  sources: SourceRecord[],
+): Promise<void> {
+  const validated = sourcesSchema.parse(sources);
+  await writeFile(
+    workspacePath(root, "records", "sources.json"),
+    `${JSON.stringify(validated, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+export async function saveAlignment(
+  root: string,
+  alignment: AlignmentItem[],
+): Promise<void> {
+  const validated = alignmentSchema.parse(alignment);
+  await writeFile(
+    workspacePath(root, "records", "alignment.json"),
+    `${JSON.stringify(validated, null, 2)}\n`,
+    "utf8",
+  );
 }
 
 async function collectMarkdownFiles(directory: string): Promise<string[]> {

@@ -33,6 +33,7 @@ export type IntakeAttachment = {
   category: "guideline" | "source";
   originalName: string;
   storedPath: string;
+  extractedPath?: string;
   mediaType: string;
   size: number;
   uploadedAt: string;
@@ -111,3 +112,74 @@ export type WorkspaceOverview = {
   };
   validation: ValidationReport;
 };
+
+export type ResearchStage =
+  | "foundation"
+  | "questions"
+  | "evidence"
+  | "chapter-1"
+  | "chapter-2"
+  | "chapter-3"
+  | "readiness";
+
+export type AgentMessage = {
+  id: string;
+  role: "student" | "agent" | "system";
+  body: string;
+  createdAt: string;
+  question?: string;
+  explanation?: string;
+  decisions?: { label: string; value: string; reason: string }[];
+  evidenceNeeded?: string[];
+  changedArtifacts?: string[];
+};
+
+export type AgentSession = {
+  schemaVersion: 1;
+  provider: "codex";
+  threadId?: string;
+  status: "idle" | "running" | "waiting" | "failed" | "complete";
+  stage: ResearchStage;
+  activity: string;
+  messages: AgentMessage[];
+  lastError?: string;
+  updatedAt: string;
+};
+
+export type AgentOverview = {
+  availability: {
+    installed: boolean;
+    authenticated: boolean;
+    version?: string;
+    message: string;
+  };
+  state: AgentSession;
+};
+
+export type SourceRecord = {
+  id: string;
+  title: string;
+  authors: string[];
+  year: number;
+  type: "journal" | "book" | "report" | "dataset" | "demo";
+  doi?: string;
+  url?: string;
+  verified: boolean;
+  note?: string;
+};
+
+export type LiteratureCandidate = Omit<SourceRecord, "id" | "verified" | "note"> & {
+  provider: "Crossref";
+};
+
+export type AlignmentItem = {
+  questionId: string;
+  question: string;
+  objectiveId: string;
+  objective: string;
+  method: string;
+  evidenceOutput: string;
+};
+
+export type WorkspaceTab =
+  "guidance" | "documents" | "sources" | "alignment" | "checks";

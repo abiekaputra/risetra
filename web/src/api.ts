@@ -1,7 +1,11 @@
 import type {
+  AgentOverview,
+  AlignmentItem,
   Artifact,
   IntakeAttachment,
+  LiteratureCandidate,
   SetupPayload,
+  SourceRecord,
   ValidationReport,
   WorkspaceOverview,
 } from "./types";
@@ -18,6 +22,88 @@ async function request<T>(pathname: string, options?: RequestInit): Promise<T> {
   const payload = (await response.json()) as T & { message?: string };
   if (!response.ok) throw new Error(payload.message ?? "Risetra request failed.");
   return payload;
+}
+
+export async function getAgent(): Promise<AgentOverview> {
+  return request<AgentOverview>("/api/agent");
+}
+
+export async function startAgent(message: string): Promise<void> {
+  await request("/api/agent/start", {
+    method: "POST",
+    body: JSON.stringify({ message }),
+  });
+}
+
+export async function sendAgentMessage(message: string): Promise<void> {
+  await request("/api/agent/messages", {
+    method: "POST",
+    body: JSON.stringify({ message }),
+  });
+}
+
+export async function stopAgent(): Promise<void> {
+  await request("/api/agent/stop", { method: "POST" });
+}
+
+export async function resetAgent(): Promise<void> {
+  await request("/api/agent/reset", { method: "POST" });
+}
+
+export async function getSources(): Promise<SourceRecord[]> {
+  return (await request<{ sources: SourceRecord[] }>("/api/sources")).sources;
+}
+
+export async function searchLiterature(
+  query: string,
+  yearFrom?: number,
+): Promise<LiteratureCandidate[]> {
+  const parameters = new URLSearchParams({ q: query });
+  if (yearFrom) parameters.set("yearFrom", String(yearFrom));
+  return (
+    await request<{ candidates: LiteratureCandidate[] }>(
+      `/api/literature/search?${parameters}`,
+    )
+  ).candidates;
+}
+
+export async function saveSources(sources: SourceRecord[]): Promise<void> {
+  await request("/api/sources", {
+    method: "PUT",
+    body: JSON.stringify({ sources }),
+  });
+}
+
+export async function getAlignment(): Promise<AlignmentItem[]> {
+  return (await request<{ alignment: AlignmentItem[] }>("/api/alignment")).alignment;
+}
+
+export async function saveAlignment(alignment: AlignmentItem[]): Promise<void> {
+  await request("/api/alignment", {
+    method: "PUT",
+    body: JSON.stringify({ alignment }),
+  });
+}
+
+export async function exportProposal(
+  format: "md" | "docx" | "pdf",
+  allowReviewed: boolean,
+): Promise<void> {
+  const response = await fetch(
+    `/api/export?format=${format}&allowReviewed=${String(allowReviewed)}`,
+    { method: "POST" },
+  );
+  if (!response.ok) {
+    const payload = (await response.json()) as { message?: string };
+    throw new Error(payload.message ?? "Proposal export failed.");
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `proposal.${format}`;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 export async function getWorkspace(): Promise<WorkspaceOverview> {

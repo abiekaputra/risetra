@@ -15,6 +15,7 @@ export type IntakeAttachment = {
   category: "guideline" | "source";
   originalName: string;
   storedPath: string;
+  extractedPath?: string;
   mediaType: string;
   size: number;
   uploadedAt: string;
@@ -92,6 +93,10 @@ export type SourceRecord = {
   note?: string;
 };
 
+export type LiteratureCandidate = Omit<SourceRecord, "id" | "verified" | "note"> & {
+  provider: "Crossref";
+};
+
 export type AlignmentItem = {
   questionId: string;
   question: string;
@@ -136,4 +141,56 @@ export type WorkspaceSummary = {
   reviewed: number;
   draft: number;
   total: number;
+};
+
+export const researchStages = [
+  "foundation",
+  "questions",
+  "evidence",
+  "chapter-1",
+  "chapter-2",
+  "chapter-3",
+  "readiness",
+] as const;
+export type ResearchStage = (typeof researchStages)[number];
+
+export type AgentDecision = {
+  label: string;
+  value: string;
+  reason: string;
+};
+
+export type AgentMessage = {
+  id: string;
+  role: "student" | "agent" | "system";
+  body: string;
+  createdAt: string;
+  question?: string;
+  explanation?: string;
+  decisions?: AgentDecision[];
+  evidenceNeeded?: string[];
+  changedArtifacts?: string[];
+};
+
+export type AgentSessionState = {
+  schemaVersion: 1;
+  provider: "codex";
+  threadId?: string;
+  status: "idle" | "running" | "waiting" | "failed" | "complete";
+  stage: ResearchStage;
+  activity: string;
+  messages: AgentMessage[];
+  lastError?: string;
+  updatedAt: string;
+};
+
+export type AgentTurnOutput = {
+  summary: string;
+  explanation: string;
+  question: string;
+  stage: ResearchStage;
+  stageStatus: "waiting_input" | "ready_for_review" | "complete";
+  decisions: AgentDecision[];
+  evidenceNeeded: string[];
+  changedArtifacts: string[];
 };

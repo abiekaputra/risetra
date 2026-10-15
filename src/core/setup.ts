@@ -68,6 +68,16 @@ export async function storeIntakeAttachment(
   await writeFile(workspacePath(root, attachment.storedPath), body, { flag: "wx" });
 }
 
+export async function storeExtractedText(
+  root: string,
+  storedPath: string,
+  text: string,
+): Promise<void> {
+  const filename = workspacePath(root, storedPath);
+  await mkdir(path.dirname(filename), { recursive: true });
+  await writeFile(filename, `${text}\n`, { flag: "wx" });
+}
+
 export async function removeIntakeAttachment(
   root: string,
   attachment: IntakeAttachment,
@@ -76,6 +86,14 @@ export async function removeIntakeAttachment(
     const code = (error as NodeJS.ErrnoException).code;
     if (code !== "ENOENT") throw error;
   });
+  if (attachment.extractedPath) {
+    await unlink(workspacePath(root, attachment.extractedPath)).catch(
+      (error: unknown) => {
+        const code = (error as NodeJS.ErrnoException).code;
+        if (code !== "ENOENT") throw error;
+      },
+    );
+  }
 }
 
 export function attachmentPath(

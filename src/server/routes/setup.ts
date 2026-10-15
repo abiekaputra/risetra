@@ -6,12 +6,14 @@ import { z } from "zod";
 
 import {
   attachmentPath,
+  extractDocumentText,
   loadWorkspace,
   recordActivity,
   removeIntakeAttachment,
   saveResearchSetup,
   setupFor,
   storeIntakeAttachment,
+  storeExtractedText,
   writeConfig,
 } from "../../core/index.js";
 import type { IntakeAttachment } from "../../core/index.js";
@@ -164,6 +166,7 @@ export async function registerSetupRoutes(app: FastifyInstance): Promise<void> {
         category,
         originalName,
         storedPath: attachmentPath(category, filename),
+        extractedPath: undefined,
         mediaType:
           typeof mediaTypeHeader === "string"
             ? mediaTypeHeader.slice(0, 120)
@@ -173,7 +176,23 @@ export async function registerSetupRoutes(app: FastifyInstance): Promise<void> {
       };
 
       const snapshot = await loadWorkspace(app.risetra.workspaceRoot);
+      const extracted = await extractDocumentText(originalName, request.body).catch(
+        (error: unknown) => {
+          throw Object.assign(
+            new Error(
+              `The document could not be read: ${error instanceof Error ? error.message : "invalid content"}`,
+            ),
+            { statusCode: 422, code: "DOCUMENT_EXTRACTION_FAILED" },
+          );
+        },
+      );
+      if (extracted) {
+        attachment.extractedPath = path.posix.join("inputs", "extracted", `${id}.txt`);
+      }
       await storeIntakeAttachment(snapshot.root, attachment, request.body);
+      if (extracted && attachment.extractedPath) {
+        await storeExtractedText(snapshot.root, attachment.extractedPath, extracted);
+      }
       const config = {
         ...snapshot.config,
         setup: {

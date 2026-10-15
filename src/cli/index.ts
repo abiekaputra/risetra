@@ -13,7 +13,7 @@ import { failure } from "./output.js";
 const program = new Command()
   .name("risetra")
   .description("Build research you can defend")
-  .version("0.1.0");
+  .version("1.0.0");
 
 registerConfigCommand(program);
 registerInitCommand(program);

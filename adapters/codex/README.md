@@ -1,9 +1,11 @@
 # Codex adapter
 
-Copy `skills/risetra/` into the Codex skills directory used by the student, or ask Codex
-to follow the repository skill in place while working inside a Risetra workspace.
+Risetra v1 starts Codex from the local dashboard through the stable `codex exec`
+interface. The generated workspace includes `AGENTS.md` and a local copy of the research
+modules, so students do not need to install or invoke the skill manually.
 
-Start with:
+The standalone skill remains available for maintainers who deliberately work from the
+Codex CLI:
 
 ```text
 Use the Risetra skill. Read the workspace state, explain the current research decision,

@@ -36,5 +36,14 @@ describe("workspace initialization", () => {
     expect(await readFile(path.join(target, ".gitignore"), "utf8")).toContain(
       "inputs/",
     );
+    expect(await readFile(path.join(target, "AGENTS.md"), "utf8")).toContain(
+      "Never invent a source",
+    );
+    expect(
+      await readFile(
+        path.join(target, ".risetra", "modules", "core", "academic-integrity.md"),
+        "utf8",
+      ),
+    ).toContain("academic-integrity");
   });
 });

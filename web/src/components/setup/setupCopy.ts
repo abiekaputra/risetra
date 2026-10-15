@@ -8,6 +8,7 @@ export type SetupCopy = {
   finish: string;
   cancel: string;
   saved: string;
+  privacyNotice: string;
   profile: {
     title: string;
     description: string;
@@ -64,6 +65,8 @@ const id: SetupCopy = {
   finish: "Simpan dan mulai",
   cancel: "Kembali ke workspace",
   saved: "Persiapan penelitian tersimpan.",
+  privacyNotice:
+    "Saat dimulai, konteks penelitian yang relevan diproses melalui akun Codex yang sedang masuk. Jangan sertakan data partisipan yang terbatas atau dapat dikenali tanpa izin institusi.",
   profile: {
     title: "Siapa dan dari mana penelitian ini dikerjakan?",
     description:
@@ -125,6 +128,8 @@ const en: SetupCopy = {
   finish: "Save and begin",
   cancel: "Return to workspace",
   saved: "Research setup saved.",
+  privacyNotice:
+    "When guidance starts, relevant research context is processed through the signed-in Codex account. Do not include restricted or identifiable participant data without institutional permission.",
   profile: {
     title: "Who is conducting this research?",
     description:

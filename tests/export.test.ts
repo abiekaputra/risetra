@@ -3,7 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { exportProposal, loadWorkspace } from "../src/core/index.js";
+import {
+  exportProposal,
+  exportProposalFile,
+  loadWorkspace,
+} from "../src/core/index.js";
 
 const temporaryRoots: string[] = [];
 
@@ -29,5 +33,17 @@ describe("proposal export", () => {
   it("blocks export when chapters have not reached the threshold", async () => {
     const snapshot = await loadWorkspace(path.resolve("examples/demo"));
     await expect(exportProposal(snapshot, false)).rejects.toThrow("requires Chapters");
+  });
+
+  it("creates readable DOCX and PDF proposal files", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "risetra-formats-"));
+    temporaryRoots.push(root);
+    const snapshot = await loadWorkspace(path.resolve("examples/demo"));
+    snapshot.root = root;
+
+    const docx = await exportProposalFile(snapshot, "docx", true);
+    const pdf = await exportProposalFile(snapshot, "pdf", true);
+    expect((await readFile(docx)).subarray(0, 2).toString()).toBe("PK");
+    expect((await readFile(pdf)).subarray(0, 4).toString()).toBe("%PDF");
   });
 });

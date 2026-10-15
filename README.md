@@ -21,9 +21,9 @@ Observed condition → evidence → gap → question → objective
         → method → expected evidence → human review → seminar rehearsal
 ```
 
-The product does not generate an unquestioned thesis. It gives Codex or Claude Code a
-portable, auditable workflow and gives the student a dashboard for reviewing every
-artifact one at a time.
+The product does not generate an unquestioned thesis. Its dashboard starts and resumes
+Codex directly, while the student reviews every decision, evidence record, artifact,
+and revision in one local product.
 
 ## What is implemented
 
@@ -35,8 +35,16 @@ artifact one at a time.
   `DRAFT → REVIEWED → APPROVED` decisions.
 - A four-step research setup for student identity, academic context, research materials,
   practical constraints, supervisor guidance, working language, and method preference.
-- Safe local intake for institution guidelines and initial source files. Uploaded files
-  remain unverified leads until a student or reviewer registers their evidence.
+- A guided Codex research session inside the dashboard. The runtime keeps one thread,
+  asks one focused question per turn, explains decisions pedagogically, records missing
+  evidence, and shows every artifact it changed.
+- Safe local intake for institution guidelines and initial source files, including text
+  extraction from PDF and DOCX. Uploaded content remains untrusted and unverified until
+  a student or reviewer registers its evidence.
+- Structured source inventory and question–objective–method alignment editors.
+- Crossref literature discovery that imports candidate metadata as unverified evidence
+  until the student checks the full text and relevance.
+- Downloadable Markdown, DOCX, and PDF proposal exports after the required human review.
 - Separate research modules for integrity, evidence, Chapters 1–3, languages,
   institutions, qualitative, quantitative, mixed, experimental, survey, engineering,
   machine learning, doctrinal, historical, literature-based, and practice-based work.
@@ -47,7 +55,16 @@ artifact one at a time.
 
 ## Quick start
 
-Requirements: Node.js 22 or newer.
+Requirements: Node.js 22 or newer, Codex CLI installed, and `codex login` completed.
+
+### Simplest setup on macOS
+
+Download or clone the repository, then double-click **Start Risetra.command**. The
+launcher prepares a workspace under `Documents/Risetra Workspace`, starts the local
+product, and opens it in the browser. On the first run, complete the four setup screens
+and press **Simpan dan mulai**. Codex begins the research guidance inside Risetra.
+
+### Developer setup
 
 ```bash
 npm install
@@ -66,8 +83,10 @@ node dist/cli/index.js serve ./my-proposal
 
 The first screen collects the student profile, working topic, observed problem, research
 object, location, motivation, available time and resources, supervisor notes, institution
-guidelines, and initial source leads. Completing it creates the first research charter;
-all proposal content still begins in `DRAFT` and requires human review.
+guidelines, and initial source leads. **Simpan dan mulai** creates the first research
+charter and starts Codex. The session then progresses through foundation, questions,
+evidence, Chapters 1–3, and seminar readiness. Every edited artifact returns to `DRAFT`
+until a human reviews it.
 
 ### Language is a workspace decision
 
@@ -92,10 +111,10 @@ changes a claim, evidence identifier, or approval state automatically.
 
 ```mermaid
 flowchart LR
-  Student[Student] --> Agent[Codex or Claude Code]
-  Student --> Dashboard[React review dashboard]
-  Agent --> Files[Markdown and JSON workspace]
+  Student[Student] --> Dashboard[React product dashboard]
   Dashboard --> API[Local Fastify API]
+  API --> Runtime[Codex CLI runtime]
+  Runtime --> Files[Markdown and JSON workspace]
   API --> Files
   CLI[Risetra CLI] --> Validator[Deterministic validators]
   Validator --> Files
@@ -108,7 +127,7 @@ in a separate database, and the first release requires no Risetra cloud account 
 central model API.
 
 Read [the architecture](docs/architecture.md), [module authoring rules](docs/module-authoring.md),
-and [the security model](docs/security.md).
+[the student guide](docs/user-guide.md), and [the security model](docs/security.md).
 
 ## Human review model
 
@@ -144,9 +163,11 @@ responsibility. Tests cover success, failure, boundary, and security-sensitive p
 
 ## Project status
 
-Version `0.2.0` is a local portfolio release. It is not published to npm and has no
-hosted service. The dashboard and CLI run locally, the demo is reproducible, and module
-review remains visible rather than being claimed as complete.
+Version `1.0.0` is a complete local product release for the documented Chapters 1–3
+workflow. It has no hosted service and stores proposal material locally. Codex login and
+model usage come from the student's existing Codex installation. The software workflow
+is complete; bundled academic modules keep their visible review status and are never
+misrepresented as institution-approved rules.
 
 ## License
 

@@ -1,118 +1,149 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  exportProposal,
+  getAgent,
+  getAlignment,
   getArtifacts,
+  getSources,
   getWorkspace,
+  resetAgent,
   reviewArtifact,
   runValidation,
+  saveAlignment,
   saveArtifact,
+  saveSources,
+  sendAgentMessage,
+  startAgent,
+  stopAgent,
 } from "./api";
-import { ArtifactEditor } from "./components/ArtifactEditor";
-import { ArtifactList } from "./components/ArtifactList";
-import { EmptyState } from "./components/EmptyState";
-import { ValidationPanel } from "./components/ValidationPanel";
+import { AgentPanel } from "./components/AgentPanel";
+import { AlignmentPanel } from "./components/AlignmentPanel";
+import { ChecksPanel } from "./components/ChecksPanel";
+import { DocumentsPanel } from "./components/DocumentsPanel";
+import { ResearchNav } from "./components/ResearchNav";
+import { SourcesPanel } from "./components/SourcesPanel";
 import { WorkspaceHeader } from "./components/WorkspaceHeader";
 import { SetupWizard } from "./components/setup/SetupWizard";
 import { copyFor } from "./i18n";
+import { errorMessage } from "./errors";
 import type {
+  AgentOverview,
+  AlignmentItem,
   Artifact,
   ReviewStatus,
+  SourceRecord,
   ValidationReport,
   WorkspaceOverview,
+  WorkspaceTab,
 } from "./types";
 
 export function App() {
   const [workspace, setWorkspace] = useState<WorkspaceOverview>();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const [agent, setAgent] = useState<AgentOverview>();
+  const [sources, setSources] = useState<SourceRecord[]>([]);
+  const [alignment, setAlignment] = useState<AlignmentItem[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("guidance");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
   const [setupOpen, setSetupOpen] = useState(false);
   const copy = copyFor(workspace?.config.languages.dashboard ?? "en-US");
-
   const selected = artifacts.find((artifact) => artifact.id === selectedId);
 
   const refresh = useCallback(async () => {
-    const [nextWorkspace, nextArtifacts] = await Promise.all([
-      getWorkspace(),
-      getArtifacts(),
-    ]);
+    const [nextWorkspace, nextArtifacts, nextAgent, nextSources, nextAlignment] =
+      await Promise.all([
+        getWorkspace(),
+        getArtifacts(),
+        getAgent(),
+        getSources(),
+        getAlignment(),
+      ]);
     setWorkspace(nextWorkspace);
     setArtifacts(nextArtifacts);
+    setAgent(nextAgent);
+    setSources(nextSources);
+    setAlignment(nextAlignment);
     setSelectedId((current) => current ?? nextArtifacts[0]?.id);
   }, []);
 
   useEffect(() => {
     let active = true;
-    Promise.all([getWorkspace(), getArtifacts()])
-      .then(([nextWorkspace, nextArtifacts]) => {
+    Promise.all([
+      getWorkspace(),
+      getArtifacts(),
+      getAgent(),
+      getSources(),
+      getAlignment(),
+    ])
+      .then(([nextWorkspace, nextArtifacts, nextAgent, nextSources, nextAlignment]) => {
         if (!active) return;
         setWorkspace(nextWorkspace);
         setArtifacts(nextArtifacts);
+        setAgent(nextAgent);
+        setSources(nextSources);
+        setAlignment(nextAlignment);
         setSelectedId(nextArtifacts[0]?.id);
         setSetupOpen(nextWorkspace.config.setup?.completed !== true);
       })
       .catch((caught: unknown) => {
-        if (!active) return;
-        setError(
-          caught instanceof Error ? caught.message : "Unable to load workspace.",
-        );
+        if (active) setError(errorMessage(caught));
       });
     return () => {
       active = false;
     };
   }, []);
 
-  async function execute(action: () => Promise<void>, successMessage: string) {
+  useEffect(() => {
+    if (agent?.state.status !== "running") return;
+    const timer = window.setInterval(() => {
+      getAgent()
+        .then((next) => {
+          setAgent(next);
+          if (next.state.status !== "running") void refresh();
+        })
+        .catch((caught: unknown) => setError(errorMessage(caught)));
+    }, 1_500);
+    return () => window.clearInterval(timer);
+  }, [agent?.state.status, refresh]);
+
+  async function execute(action: () => Promise<void>, success: string) {
     setBusy(true);
     setError(undefined);
     setMessage(undefined);
     try {
       await action();
-      setMessage(successMessage);
+      setMessage(success);
       await refresh();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "The operation failed.");
+      setError(errorMessage(caught));
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleSave(body: string) {
-    if (!selected) return;
-    await execute(async () => {
-      const saved = await saveArtifact(selected, body);
-      setArtifacts((items) =>
-        items.map((item) => (item.id === saved.id ? saved : item)),
-      );
-    }, copy.draftSaved);
+  async function handleAgentMessage(input: string) {
+    setError(undefined);
+    try {
+      if ((agent?.state.messages.length ?? 0) === 0) await startAgent(input);
+      else await sendAgentMessage(input);
+      setAgent(await getAgent());
+    } catch (caught) {
+      setError(errorMessage(caught));
+    }
   }
 
-  async function handleReview(status: ReviewStatus, reviewer: string, note: string) {
-    if (!selected) return;
-    await execute(async () => {
-      const reviewed = await reviewArtifact(selected, status, reviewer, note);
-      setArtifacts((items) =>
-        items.map((item) => (item.id === reviewed.id ? reviewed : item)),
-      );
-    }, copy.artifactMarked(copy.statuses[status]));
-  }
-
-  async function handleValidation() {
-    await execute(async () => {
-      const report: ValidationReport = await runValidation();
-      setWorkspace((current) =>
-        current ? { ...current, validation: report } : current,
-      );
-    }, copy.checksComplete);
-  }
-
-  async function handleSetupComplete(successMessage: string) {
+  async function handleSetupComplete(success: string) {
     await refresh();
     setSetupOpen(false);
-    setError(undefined);
-    setMessage(successMessage);
+    setActiveTab("guidance");
+    setMessage(success);
+    await handleAgentMessage(
+      "Mulai bimbingan berdasarkan persiapan penelitian saya. Ajukan satu pertanyaan paling penting terlebih dahulu.",
+    );
   }
 
   if (error && !workspace) {
@@ -123,7 +154,8 @@ export function App() {
       </div>
     );
   }
-  if (!workspace) return <div className="loading-state">{copy.loading}</div>;
+  if (!workspace || !agent) return <div className="loading-state">{copy.loading}</div>;
+  const locale = workspace.config.languages.dashboard;
 
   return (
     <div className="app-shell">
@@ -144,37 +176,122 @@ export function App() {
         <>
           <WorkspaceHeader
             workspace={workspace}
-            onValidate={handleValidation}
+            onValidate={() => setActiveTab("checks")}
             onSetup={() => setSetupOpen(true)}
             validating={busy}
             copy={copy}
           />
+          <ResearchNav active={activeTab} locale={locale} onChange={setActiveTab} />
           {(message || error) && (
             <div className={`toast ${error ? "toast--error" : "toast--success"}`}>
               {error ?? message}
             </div>
           )}
-          <div className="workspace-grid">
-            <ArtifactList
-              artifacts={artifacts}
-              selectedId={selectedId}
-              onSelect={(artifact) => setSelectedId(artifact.id)}
-              copy={copy}
+          {activeTab === "guidance" && (
+            <AgentPanel
+              agent={agent}
+              locale={locale}
+              onSend={handleAgentMessage}
+              onStop={async () => {
+                await stopAgent();
+                setAgent(await getAgent());
+              }}
+              onReset={async () => {
+                if (
+                  window.confirm("Mulai sesi baru dan hapus percakapan lokal saat ini?")
+                ) {
+                  await resetAgent();
+                  setAgent(await getAgent());
+                }
+              }}
             />
-            {selected ? (
-              <ArtifactEditor
-                key={selected.id}
-                artifact={selected}
-                busy={busy}
-                onSave={handleSave}
-                onReview={handleReview}
-                copy={copy}
-              />
-            ) : (
-              <EmptyState />
-            )}
-            <ValidationPanel report={workspace.validation} copy={copy} />
-          </div>
+          )}
+          {activeTab === "documents" && (
+            <DocumentsPanel
+              artifacts={artifacts}
+              selected={selected}
+              busy={busy}
+              copy={copy}
+              onSelect={(artifact) => setSelectedId(artifact.id)}
+              onSave={(body) =>
+                execute(async () => {
+                  if (!selected) return;
+                  const saved = await saveArtifact(selected, body);
+                  setArtifacts((items) =>
+                    items.map((item) => (item.id === saved.id ? saved : item)),
+                  );
+                }, copy.draftSaved)
+              }
+              onReview={(status: ReviewStatus, reviewer, note) =>
+                execute(async () => {
+                  if (!selected) return;
+                  const reviewed = await reviewArtifact(
+                    selected,
+                    status,
+                    reviewer,
+                    note,
+                  );
+                  setArtifacts((items) =>
+                    items.map((item) => (item.id === reviewed.id ? reviewed : item)),
+                  );
+                }, copy.artifactMarked(copy.statuses[status]))
+              }
+            />
+          )}
+          {activeTab === "sources" && (
+            <SourcesPanel
+              sources={sources}
+              busy={busy}
+              locale={locale}
+              onChange={setSources}
+              onSave={() =>
+                execute(
+                  () => saveSources(sources),
+                  locale.startsWith("id") ? "Sumber tersimpan." : "Sources saved.",
+                )
+              }
+            />
+          )}
+          {activeTab === "alignment" && (
+            <AlignmentPanel
+              alignment={alignment}
+              busy={busy}
+              locale={locale}
+              onChange={setAlignment}
+              onSave={() =>
+                execute(
+                  () => saveAlignment(alignment),
+                  locale.startsWith("id")
+                    ? "Keselarasan tersimpan."
+                    : "Alignment saved.",
+                )
+              }
+            />
+          )}
+          {activeTab === "checks" && (
+            <ChecksPanel
+              report={workspace.validation}
+              busy={busy}
+              locale={locale}
+              copy={copy}
+              onValidate={() =>
+                execute(async () => {
+                  const report: ValidationReport = await runValidation();
+                  setWorkspace((current) =>
+                    current ? { ...current, validation: report } : current,
+                  );
+                }, copy.checksComplete)
+              }
+              onExport={(format, allowReviewed) =>
+                execute(
+                  () => exportProposal(format, allowReviewed),
+                  locale.startsWith("id")
+                    ? "Proposal berhasil diekspor."
+                    : "Proposal exported.",
+                )
+              }
+            />
+          )}
         </>
       )}
     </div>

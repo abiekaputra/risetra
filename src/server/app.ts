@@ -4,12 +4,15 @@ import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
 import { access } from "node:fs/promises";
 import path from "node:path";
 
+import { CodexRuntime } from "./agent/codex-runtime.js";
 import { attachContext } from "./context.js";
 import { registerErrorHandler } from "./errors.js";
 import { registerArtifactRoutes } from "./routes/artifacts.js";
 import { registerSetupRoutes } from "./routes/setup.js";
 import { registerValidationRoutes } from "./routes/validation.js";
 import { registerWorkspaceRoutes } from "./routes/workspace.js";
+import { registerAgentRoutes } from "./routes/agent.js";
+import { registerLiteratureRoutes } from "./routes/literature.js";
 
 export type CreateServerOptions = {
   workspaceRoot: string;
@@ -34,7 +37,9 @@ export async function createServer(
     logger: options.logger ?? true,
     bodyLimit: 256 * 1024,
   });
-  attachContext(app, { workspaceRoot: path.resolve(options.workspaceRoot) });
+  const workspaceRoot = path.resolve(options.workspaceRoot);
+  const agent = new CodexRuntime(workspaceRoot);
+  attachContext(app, { workspaceRoot, agent });
   registerErrorHandler(app);
   app.addContentTypeParser(
     "application/octet-stream",
@@ -50,6 +55,8 @@ export async function createServer(
   }
 
   await registerWorkspaceRoutes(app);
+  await registerAgentRoutes(app);
+  await registerLiteratureRoutes(app);
   await registerArtifactRoutes(app);
   await registerSetupRoutes(app);
   await registerValidationRoutes(app);
