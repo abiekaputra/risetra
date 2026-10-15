@@ -4,6 +4,8 @@
 
 <p align="center"><strong>Build research you can defend.</strong></p>
 
+![Risetra guided research workspace](docs/images/guidance.jpg)
+
 Risetra is a local research proposal workspace for students across disciplines. It
 connects sources, questions, objectives, methods, chapters, and human review so a
 proposal remains explainable beneath the prose.
@@ -24,6 +26,17 @@ Observed condition → evidence → gap → question → objective
 The product does not generate an unquestioned thesis. Its dashboard starts and resumes
 Codex directly, while the student reviews every decision, evidence record, artifact,
 and revision in one local product.
+
+## Product preview
+
+| Review the proposal documents                             | Discover and verify candidate sources                                |
+| --------------------------------------------------------- | -------------------------------------------------------------------- |
+| ![Proposal document workspace](docs/images/documents.jpg) | ![Literature discovery workspace](docs/images/literature-search.jpg) |
+
+![Proposal validation and export](docs/images/validation-export.jpg)
+
+These screens come from the bundled synthetic demonstration workspace. They show the
+implemented local product without presenting demonstration content as real research.
 
 ## What is implemented
 
